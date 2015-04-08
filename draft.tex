@@ -574,8 +574,31 @@ mpQP recursion and the updated problems are solved again recursively, if a const
 because the smallest $\alpha$ corresponds to the zero-crossing of its dual variable then again the mpQP recursion 
 is solved again. The updated active set is the new known active set at $\mathpzc x_0 = x_N(\alpha)$ and the line-search
 continues until the state~$\mathpzc x_e$ is in the same active set as $\mathpzc x_N(\alpha)$ where the line-search terminates.
-To initialise we start at the origin $\mathpzc x_0=0$, since we know that no constraints are active. Notice that the right hand side 
-of~\eqref{eq:dist:cons} is updated the same way, a line-search is used to determine the active affine representation.
+To initialise we start at the origin $\mathpzc x_0=0$, since we know that no constraints are active. 
+
+Notice that in since the right hand side of~\eqref{eq:PWA:def:disturbance} is considered to be piecewise affine, the active 
+affine function needs to be determined in a similar fashion. Elementwise $H(x_k(\alpha),u_k(\alpha))$ reduces to 
+\begin{equation}
+\Resize{
+\begin{split}
+	H_i(x_k(\alpha),u_k(\alpha)) &= \max_j\{\left(H^x_{i,j} \Psi^x_k +H^u_{i,j}\Psi^u_k\right)x_N(\alpha) + 
+	\left(H^x_{i,j} \psi^x_k +H^u_{i,j}\psi^u_k + h_{i,j}\right) \}\\
+	&=\max_j f_j\alpha + g_j
+	\end{split}
+}
+\end{equation}
+which we can rewrite as
+\begin{equation}\label{eq:definition:as:mpLP}
+	H_i(x_k(\alpha),u_k(\alpha)) = \left\{\begin{array}{rcl} \min_{(t,\alpha)}& &t\\
+	\text{s.t.}& &f_j\alpha+g_j \leq t\; \forall j.\\
+	& &0\leq\alpha\leq1
+	\end{array}\right.
+\end{equation}
+So elementwise the determination of the active affine representation is a multi-parametric linear program
+that has to be solved in every active set update. So that $W_x^\prime,\,W_u^\prime$ and $w^\prime_c$ remain the active
+solution. This can be done by computing the vertices of $\mathcal H = \{(t,\alpha):0\leq\alpha\leq1\wedge
+f_j\alpha+g_j\leq t\;\forall j\}$ and ordering the vertices such that $0=\alpha_1\leq\alpha_2\leq\dots$ the solution
+that has to be considered in the line search is given by $\alpha_2$.
 
 If there are compatibility constraints on the initial state, i.e.\ if $\beta_N$ is non-trivial, then $\alpha$ cannot continue 
 to  increase since equality constraints on $x_N(\alpha)$ are active, however $\beta_N$ can be used to update the active set. 
