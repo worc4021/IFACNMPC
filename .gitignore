@@ -28,3 +28,5 @@
 *.fls
 *.bcf
 *.pyg
+*.txt
+.DS_Store
