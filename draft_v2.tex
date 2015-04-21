@@ -48,7 +48,7 @@
 %\begin{pf} ... \end{pf}      % Proof
 %\begin{ack} ... end{ack}     % Acknowledgement
 
-\title{Robust receding horizon control for linear systems with state dependent disturbance} 
+\title{Robust receding horizon control for linear systems with state and input dependent disturbances}
 
 
 \thanks[footnoteinfo]{Supported by the Martin Senior Scholarship of Worcester College, Oxford.}
@@ -60,11 +60,17 @@
 rainer.schaich@eng.ox.ac.uk, mark.cannon@eng.ox.ac.uk).}
 
 \begin{abstract}                % Abstract of not more than 250 words.
-
+  A robust model predictive controller is proposed for constrained linear systems with unknown disturbances
+  that are subject to state and input dependent piecewise affine bounds.
+  % with a dependence on the system state and control input. 
+  The formulation encompasses problems involving model uncertainty arising from unknown system
+  parameters and linearisation errors. We propose a computationally efficient method for the online
+  optimization of a receding horizon min-max cost over the class of feedback strategies subject robust
+  constraint satisfaction and provide illustrative numerical examples.
 \end{abstract}
 
 \begin{keyword}
--
+Robust optimal control, min-max control, multiparametric programming 
 \end{keyword}
 
 \end{frontmatter}
@@ -148,7 +154,7 @@ assumptions on the parametrisation of control inputs.
 %present a robust receding horizon control scheme for
 %
 To make it possible to obtain a closed form solution of the min-max optimal control problem we assume a
-linear-quadratic problem formulation. Thus we assume the linear dynamic model 
+linear-quadratic problem formulation. Thus we assume linear dynamics 
 \begin{equation}\label{eq:system:equation}
 	x^+ = A x + B u + D w,
 \end{equation}
@@ -207,7 +213,7 @@ with
 \end{subequations}
 Thus the constraints $(x,u)\in\mathcal Z_m$ ensure that the terminal state, namely $x^+$ at $m=1$, is
 contained in $\mathcal{X}^\infty$. We define $\mathcal{X}^\infty$ as the maximal robust positive invariant (MRPI) set \citep{blanchini:2007}), for the closed-loop system governed by a fixed state feedback controller
-$u=Kx$, so that 
+$u=Kx$:
 %
 \begin{equation}\label{eq:definition:MRPI:set}
 	\mathcal X^\infty = \{x: (A+BK)x + Dw \in \mathcal X^\infty \forall w\in\mathcal W(x,Kx)\},
@@ -505,22 +511,23 @@ With Lemma~\ref{lem:mpQP:solution} we obtain
       \end{array}\right)
 \]
 where $\eta^\ast$ denotes the dual variable to the active inequality constraints and hence must
-be non-negative, i.e.~$\eta^\ast\geq0$. Notice that we omit stage indices to avoid overloaded notation.
+be non-negative, i.e.~$\eta^\ast\geq0$. Notice that to avoid
+overloaded notation we have omitted the stage indices.
 The cost-to-go for the minimisation problem at stage $m=1$ is
-\begin{equation}
+\[
 	\hat J_1^\ast(z) = \frac{1}{2}z^T
     \hat Q_1 z + c_1 z + d_1
-\end{equation}
+\]
 and the compatibility constraint is given by
 \begin{equation}\label{prototype:compatibility:conditions}
 	N_{\hat\beta}^T(\bar S z + \bar f) = 0,
 \end{equation}
-i.e.\ $C_1^x$ and $C_1^u$ are given as a row wise normalised version of~\eqref{prototype:compatibility:conditions}.
+i.e.\ $C_1^x$ and $C_1^u$ enforce a row wise normalised version of~\eqref{prototype:compatibility:conditions}.
 Hence the minimisation problem at $m=1$ becomes
-\begin{equation}
+\[
 	J_1^\ast(x) = \left\{\begin{split}
-	\min_{u} & \frac{1}{2}\left(\norm{x}^2_Q + \norm{u}_R^2\right) + \hat J_{1}^\ast(x,u)\\
-    \text{s.t.} & 
+	\min_{u} \ & \frac{1}{2}\left(\norm{x}^2_Q + \norm{u}_R^2\right) + \hat J_{1}^\ast(x,u)\\
+    \text{s.t.} \ & 
     \underbrace{\left(\begin{array}{c}
     (\Xi_1^u)^\prime \\ C_1^u
     \end{array}\right)}_{\bar C}
@@ -530,25 +537,24 @@ Hence the minimisation problem at $m=1$ becomes
     }x + 
     \underbrace{\left(\begin{array}{c}\xi_1^\prime\\  {\bf{1}} \end{array}\right)}_{\bar e}
     \end{split}\right.
-\end{equation}
+\]
 and its solution is given by
-\begin{equation}
+\[
 	\left(\begin{array}{c}
 	u^\ast \\
 	\nu^\ast \\
 	\hat\zeta^\ast
-	\end{array}\right) = \left(\begin{array}{c}K^u_x\\ O^{\nu}_x \\ O^{\hat\zeta}_x
+	\end{array}\right) = \left(\begin{array}{c}K^u_x\\ L^{\nu}_x \\ L^{\hat\zeta}_x
 	\end{array}\right)x + 
-	\left(\begin{array}{c}0\\ O^{\nu}_\beta \\ O^{\hat\zeta}_{\beta}
-	\end{array}\right)\beta + \left(\begin{array}{c}k^u\\ o^{\nu} \\ o^{\hat\zeta}
+	\left(\begin{array}{c}0\\ L^{\nu}_\beta \\ L^{\hat\zeta}_{\beta}
+	\end{array}\right)\beta + \left(\begin{array}{c}k^u\\ l^{\nu} \\ l^{\hat\zeta}
 	\end{array}\right).
-\end{equation}
-Here $\hat C_2$ is a normalised version of $O^T_\beta(\bar T x + \bar e) = 0$.
-For completeness, the $m=2$ maximisation and its solution are:
-\begin{equation}
+\]
+For completeness the $m=2$ maximisation and its solution are given as
+\begin{gather*}
 	\hat J_2^\ast(x,u) = \left\{\begin{split}
-	\max_{w,x^+} & -\frac{\gamma^2}{2}\norm{w}^2 + J_{1}^\ast(x^+)\\
-	\text{s.t.} & 
+	\max_{w,x^+} \ & {-\frac{\gamma^2}{2}}\norm{w}^2 + J_{1}^\ast(x^+)\\
+	\text{s.t. }\ & 
 	\underbrace{\left(\begin{array}{cc}
 	G^\prime & 0 \\ -D & I \\
 	0 & \hat C_2
@@ -560,8 +566,7 @@ For completeness, the $m=2$ maximisation and its solution are:
 	\left(\begin{array}{c}x \\ u \end{array}\right) + \underbrace{\left(\begin{array}{c}
 	w_c^\prime \\ 0 \\ {\bf{1}}\end{array}\right)}_{\bar b}
 	\end{split}\right.
-\end{equation}
-\begin{equation}
+\\
 	\left(\begin{array}{c}
 	w^\ast \\
 	x^{+,\ast} \\
@@ -573,32 +578,33 @@ For completeness, the $m=2$ maximisation and its solution are:
 	\left(\begin{array}{c}0\\ 0 \\ N^{\eta}_{\hat\beta} \\ N^{\lambda}_{\hat\beta} \\ N^\zeta_{\hat\beta}
 	\end{array}\right)\hat\beta + \left(\begin{array}{c}m^w\\ m^{x^+} \\ n^{\eta} \\ n^{\lambda}\\ n^\zeta
 	\end{array}\right)
-\end{equation}
+\end{gather*}
+where $\hat C_2 x = {\bf{1}}$ is a normalised version of $L^T_\beta(\bar T x + \bar e) = 0$.
 All subsequent minimisations and maximisations can be solved analogously provided the active set is
 known.
 
 
 \section{Exact solution of min-max program}\label{sec:line:search}
-In the previous section we presented a recursive algorithm to solve~\eqref{eq:the:problem}
+The previous section presents a recursive algorithm to solve~\eqref{eq:the:problem}
 when all active constraints are known. In this section we present a method to find the active
-constraints for a given initial state $\mathpzc x_e$ using a line search starting from a state $\mathpzc x_0$
-for which the active constraints are known. In Section~\ref{sec:gen:mpQP} and~\ref{sec:applied:mpQP}
-we derived an explicit solution for each sub-optimisation program which depended affinely on the
+constraints for a given initial state $\chi_e$ using a line search starting from a state $\chi_0$
+for which the active constraints are known. In Sections~\ref{sec:gen:mpQP} and~\ref{sec:applied:mpQP}
+we derived an explicit solution for each optimisation sub-problem which depends affinely on the
 state~$x$ at that stage~$m$ or the state and the input at that stage. Henceforth we denote the stage 
 with an index, e.g.~$x_m$ denotes the optimised state in stage $m$, that is $x^{+,\ast}$ at stage $m+1$.
 To ensure continuity of the dual variables we choose $\hat\zeta_m = \hat\beta_m$ and $\zeta_m=\beta_{m-1}$.
 The affine character of the solution of each sub-problem allows us to parametrise the entire trajectory
-with respect to parameters at stage~$m=N$, that is $x_N=\chi_0$ $x_N=\mathpzc x_0$ and $\beta_N$.
+with respect to parameters at stage~$m=N$, that is $x_N=\chi_0$ and $\beta_N$.
 
 We recursively define all primal and dual variables:
 \begin{equation}\label{eq:trajectory:affine:representation}
 	\begin{split}
 		u_N(x_N) =& \underbrace{K_{x,N}^x}_{\Psi_N^u} x_N + \underbrace{k_N^u}_{\psi_N^u}\\
-		\nu_N(x_N,\beta_N) &= \underbrace{O_{x,N}^x}_{\Psi_N^\nu} x_N + \underbrace{O_{\beta,N}^\nu}_{\Phi_N^\nu} \beta_N + 
-		\underbrace{o_N^\nu}_{\psi_N^u}\\
+		\nu_N(x_N,\beta_N) &= \underbrace{L_{x,N}^x}_{\Psi_N^\nu} x_N + \underbrace{L_{\beta,N}^\nu}_{\Phi_N^\nu} \beta_N + 
+		\underbrace{l_N^\nu}_{\psi_N^u}\\
 		&\vdots \\
 		x_0(x_N) =& \underbrace{M_{z,1}^{x^+}\left(\begin{array}{c} \Psi_2^x \\ \Psi_1^u \end{array}\right)}_{\Psi_1^x}x_N + 
-		M_{z,1}^{x^+}\left(\begin{array}{c} \psi_2^x \\ \psi_1^u \end{array}\right) + m_1^{x^+}\\
+		\underbrace{M_{z,1}^{x^+}\left(\begin{array}{c} \psi_2^x \\ \psi_1^u \end{array}\right) + m_1^{x^+}}_{\psi^x_1}\\
 		\eta_1(x_N,\beta_N) =& \underbrace{\left(N_{z,1}^{\eta}\left(\begin{array}{c} \Psi_2^x \\ \Psi_1^u \end{array}\right) + 
 		N_{\hat\beta,1}^\eta \Psi_1^{\hat\zeta}\right)}_{\Psi_1^\eta}x_N + \underbrace{N_{\hat\beta,1}^\eta \Phi_1^{\hat\zeta}}_{\Phi_1^\eta} \beta_N\\
 		&+\underbrace{N_{z,1}^{\eta}\left(\begin{array}{c} \psi_2^x \\ \psi_1^u \end{array}\right) + 
@@ -606,33 +612,36 @@ We recursively define all primal and dual variables:
 		&\vdots
 	\end{split}
 \end{equation}
-Notice that $\Phi^{(\cdot)}_m$ is only non-trivial if the associated sub-problem is degenerate. The 
-representation~\eqref{eq:trajectory:affine:representation} is valid as long as the constraint set remains unchanged, 
-i.e. the inequalities that hold with equality do not change. Starting from the known set of active constraints at
-$\mathpzc x_0$ we perform a line search towards $\mathpzc x_e$, i.e. we vary $x_N(\alpha)=\mathpzc x_0+
-\alpha(\mathpzc x_e-x_0)$ for $0\leq\alpha\leq1$. We use~\eqref{eq:trajectory:affine:representation} to
-check all inactive constraints with the primal variables $x_m(x_N(\alpha)),\, u_m(x_N(\alpha))$ and~$w_m(x_N(\alpha))$,
-and all dual variables corresponding to inequality constraints to check whether constraints need to be deactivated. That is,
-we search for the smallest $\alpha$ such that $\Xi_{m,i}^x x_m(x_N(\alpha))+\Xi_{m,i}^u u_m(x_N(\alpha))=\xi_{m,i}$
-et cetera for the primal variables and the smallest $\eta_{m,i}(x_N(\alpha),\beta_N)=0$ and update the set of active
-constraints accordingly, i.e. if an additional constraint is activated it is introduced to the equality constraint
-mpQP recursion and the updated problems are solved again recursively, if a constraint needs to be deactivated
-because the smallest $\alpha$ corresponds to the zero-crossing of its dual variable then again the mpQP recursion 
-is solved again. The updated active set is the new known active set at $\mathpzc x_0 = x_N(\alpha)$ and the line-search
-continues until the state~$\mathpzc x_e$ is in the same active set as $\mathpzc x_N(\alpha)$ where the line-search terminates.
-To initialise we start at the origin $\mathpzc x_0=0$, since we know that no constraints are active. 
+Notice that $\Phi^{(\cdot)}_m$ is only non-trivial if the associated sub-problem is degenerate. The
+representation~\eqref{eq:trajectory:affine:representation} is valid as long as the constraint set remains
+unchanged, i.e.\ the inequalities that hold with equality do not change. Starting from the known set of active
+constraints at $\chi_0$ we perform a line search towards $\chi_e$, i.e. we vary
+$x_N(\alpha)=\chi_0+ \alpha(\chi_e-x_0)$ for $0\leq\alpha\leq1$. We
+use~\eqref{eq:trajectory:affine:representation} to check all inactive constraints with the primal variables
+$x_m(x_N(\alpha)),\, u_m(x_N(\alpha))$ and~$w_m(x_N(\alpha))$, and all dual variables corresponding to
+inequality constraints to check whether constraints need to be deactivated. That is, we search for the
+smallest $\alpha$ such that $\Xi_{m,i}^x x_m(x_N(\alpha))+\Xi_{m,i}^u u_m(x_N(\alpha))=\xi_{m,i}$ or
+$G_iw_m(x_N(\alpha))=1$ or $\eta_{m,i}(x_N(\alpha),\beta_N)=0$ for some $m$ and $i$, and update the set of active
+constraints accordingly, i.e. if an additional constraint is activated it is introduced to the equality
+constraint mpQP recursion and the updated problems are solved again recursively, if a constraint is
+deactivated because the smallest $\alpha$ corresponds to the zero-crossing of its dual variable then it is
+removed and the
+mpQP recursion is solved again. The updated active set is the new known active set at $\chi_0 = x_N(\alpha)$
+and the line-search continues until the state~$\chi_e$ is in the same active set as $\chi_N(\alpha)$ where the
+line-search terminates.  To initialise we start at the origin $\chi_0=0$, since we know that no constraints
+are active.
 
-Notice that in since the right hand side of~\eqref{eq:PWA:def:disturbance} is considered to be piecewise affine, the active 
+Notice that since the right hand side of~\eqref{eq:PWA:def:disturbance} is considered to be piecewise affine, the active 
 affine function needs to be determined in a similar fashion. Elementwise $H(x_k(\alpha),u_k(\alpha))$ reduces to 
-\begin{equation}
-\Resize{
+\[
 \begin{split}
-	H_i(x_k(\alpha),u_k(\alpha)) &= \max_j\{\left(H^x_{i,j} \Psi^x_k +H^u_{i,j}\Psi^u_k\right)x_N(\alpha) + 
-	\left(H^x_{i,j} \psi^x_k +H^u_{i,j}\psi^u_k + h_{i,j}\right) \}\\
+	H_i(x_k(\alpha),u_k(\alpha)) &= \begin{aligned}[t] \max_j\{ & \left(H^x_{i,j} \Psi^x_k
+          +H^u_{i,j}\Psi^u_k\right)x_N(\alpha)\\
+        & + \left(H^x_{i,j} \psi^x_k +H^u_{i,j}\psi^u_k + h_{i,j}\right) \}
+        \end{aligned}\\
 	&=\max_j f_j\alpha + g_j
 	\end{split}
-}
-\end{equation}
+\]
 which we can rewrite as
 \begin{equation}\label{eq:definition:as:mpLP}
 	H_i(x_k(\alpha),u_k(\alpha)) = \left\{\begin{array}{rcl} \min_{(t,\alpha)}& &t\\
@@ -640,11 +649,12 @@ which we can rewrite as
 	& &0\leq\alpha\leq1
 	\end{array}\right.
 \end{equation}
-So elementwise the determination of the active affine representation is a multi-parametric linear program, see e.g.~\cite{Gal:1995},
-that has to be solved in every active set update. So that $W_x^\prime,\,W_u^\prime$ and $w^\prime_c$ remain the active
-solution. This can be done by computing the vertices of $\mathcal H = \{(t,\alpha):0\leq\alpha\leq1\wedge
-f_j\alpha+g_j\leq t\;\forall j\}$ and ordering the vertices such that $0=\alpha_1\leq\alpha_2\leq\dots$ the solution
-that has to be considered in the line search is given by $\alpha_2$.
+Thus the elementwise determination of the active affine representation is a multi-parametric linear program
+\citep[see e.g.][]{Gal:1995} that has to be solved in every active set update in order that $W_x^\prime,\,W_u^\prime$
+and $w^\prime_c$ provide the active solution. This can be done by computing the vertices of
+$\mathcal H = \{(t,\alpha):0\leq\alpha\leq1\wedge f_j\alpha+g_j\leq t\;\forall j\}$ and ordering the vertices
+such that $0=\alpha_1\leq\alpha_2\leq\dots$ the solution that has to be considered in the line search is then given
+by $\alpha_2$.
 
 If there are compatibility constraints on the initial state, i.e.\ if $\beta_N$ is non-trivial, then $\alpha$ cannot continue 
 to  increase since equality constraints on $x_N(\alpha)$ are active, however $\beta_N$ can be used to update the active set. 
