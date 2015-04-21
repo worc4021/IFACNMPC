@@ -85,7 +85,7 @@ horizon is split into stages and the actions of controller and adversary at each
 outcome of the previous stage). Theoretical properties of these controllers are well understood \citep[e.g.][]{Mayne:2000}. However, the numerical computation of robust model predictive controllers still poses
 a challenge and only few tractable solutions have been proposed.
 
-Numerous strategies have been proposed to solve RMPC problems for linear systems subject to linear state and
+Various strategies have been proposed to solve RMPC problems for linear systems subject to linear state and
 input constraints, with model uncertainty in the form of bounded additive disturbances and/or multiplicative
 parameters. For the case of unknown additive disturbances, \citet{Scokaert:1998} propose a scenario-based
 approach to solve a sequence of min-max problems online, however the computational complexity of this approach
@@ -283,20 +283,22 @@ min-max programs such as~\eqref{eq:the:problem} efficiently.
 \section{Solving equality constrained multi-parametric quadratic programs}\label{sec:gen:mpQP}
 In this section we discuss equality constraint multi-parametric quadratic programs (mpQP) 
 (see~\cite{bemporad02,Tondel:2003} for an extended discussion), as they are essential in the treatment 
-of the considered min-max program using an active set solver. Note that the notation in this section does 
-not refer to the notation in the preceding and proceeding sections.
-
+of the considered min-max program using an active set solver. 
+%Note that the notation in this section does not refer to the notation in the preceding and proceeding sections.
 Consider the primal equality-constrained concave mpQP
 \begin{equation}\label{mpQP:primal}
 	V(\theta) = \left\{\begin{split}
-	\max_x & \;\frac{1}{2} x^T W x + c^Tx + d\\
-	\text{s.t.} &\; Hx  = f +S\theta
+	\max_{y} & \;\frac{1}{2} y^T W y + c^Ty + d\\
+	\text{s.t.} &\; Hy  = f +S\theta
 	\end{split}\right.
 \end{equation}
-for $W\preceq 0.$ The Lagrangian function associated with~\eqref{mpQP:primal} is
-\begin{equation}
-	L(x,\lambda,\theta)  = \frac{1}{2} x^T W x + c^Tx + d + \lambda^T(Hx - f - S\theta)
-\end{equation}
+%where  $y\in\mathbb{R}^{n_y}$ is the optimization variable, 
+where $W\preceq 0$, $c$, $d$, $H$, $f$, $S$ are constants and $\theta$ is a variable parameter. We wish to
+know how the solution of (\ref{mpQP:primal}) varies with $\theta$.  The Lagrangian function
+associated with~\eqref{mpQP:primal} is
+\[
+	L(y,\lambda,\theta)  = \frac{1}{2} y^T W y + c^Ty + d + \lambda^T(Hy - f - S\theta)
+\]
 and the dual problem is the unconstrained mpQP
 \begin{equation}\label{mpQP:dual}\begin{split}
 	\min_\lambda &\; \mathcal D(\lambda,\theta)= \min_\lambda-\frac{1}{2}\lambda^T H W^{-1}H^T \lambda 
@@ -306,107 +308,110 @@ and the dual problem is the unconstrained mpQP
 To solve~\eqref{mpQP:primal} we consider the first order optimality conditions, see e.g.~\cite{Fletcher:2000}:
 \begin{equation}\label{kkt:conditions}
 	\begin{aligned}
-        W x + H^T\lambda & = -c \\
-        H x &= f + S\theta.
+        W y + H^T\lambda & = -c \\
+        H y &= f + S\theta.
 	\end{aligned}
 \end{equation}
 
-\begin{thm}\label{thm:mpQP:solution}
+\begin{lem}\label{lem:mpQP:solution}
 The solution of~\eqref{kkt:conditions} has the representation
 \begin{equation}\label{mpQP:solution}
 	\begin{split}
-		x &= M_\theta \theta + m\\
+		y &= M_\theta \theta + m\\
 		\lambda &= N_\theta \theta + N_\beta \beta + n
 	\end{split}
 \end{equation}
-where $N_\beta\neq 0$ only if $H$ is rank deficient, in which case the rows
-of $N_\beta$ form a basis of the kernel of $H$, i.e. $H^TN_\beta=0$
-\end{thm}
+where $N_\beta\neq 0$ only if $H$ is not right invertible, in which case $H^TN_\beta=0$ and the columns
+of $N_\beta$ span ker$(H^T)$.
+\end{lem}
 %
-The matrices~$M_\theta$, $N_\theta$, $N_\beta$ as well as the vectors $m$ and $n$
-are constant, the variable $\beta$ is used to parametrise the solution in the null space of~\eqref{kkt:conditions}.
+The matrices $M_\theta$, $N_\theta$, $N_\beta$ and vectors $m$, $n$
+are constant and the variable $\beta$ is used to parametrise the solution in the null space
+of~\eqref{kkt:conditions}. We say (\ref{mpQP:primal}) is \textit{degenerate} if $N_\beta\neq 0$.
 %
 \begin{pf}
-There are two cases of rank deficient $H$: rank$(H)=n_x<n_\lambda$ and
-rank$(H)<\min\{n_x,n_\lambda\}$.
-Using the QR-decomposition (see e.g.~\cite{Nocedal:2006}) of $H=(Q_1,Q_2)\cdot(R^T,0)^T$ the solution 
+If $H$ is not right invertible, then we must have rank$(H)=n_y<n_\lambda$ or
+rank$(H)<\min\{n_y,n_\lambda\}$.
+For the case that rank$(H)=n_y$ (i.e.\ $H$ has full rank and $n_y<n_\lambda$), 
+using the QR-decomposition \citep[e.g.][]{Nocedal:2006} of $H=(Q_1,Q_2)\cdot(R^T,0)^T$ the solution 
 is given by $(m^T,n^T)^T = \Sigma (-c^T,f^T)^T$, $(M_\theta^T,N_\theta^T)^T = 
 \Sigma (0,S^T)^T$ and $N_\beta=Q_2$, where 
-\begin{equation}
+\[
 	\Sigma = \left(\begin{array}{cc}
 	0 & R^{-1}Q_1^T \\
 	Q_1 R^{-T} & -Q_1R^{-T}WR^{-1}Q_1^T
-	\end{array}\right)
-\end{equation}
-in the case where the number of equality constraints is larger than the dimension of
-the primal variable, i.e. rank$(H)=n_x$. If rank$(H)<\min\{n_x,n_\lambda\}$, so that $R$ is
-not invertible, then
-\begin{equation}
+	\end{array}\right) .
+\]
+On the other hand if rank$(H)<\min\{n_y,n_\lambda\}$ (so that $H$ is rank deficient), then
+\[
 	\Sigma = \left(\begin{array}{cc}
 	W^{-1}-W^{-1}R^T\Delta RW^{-1} & W^{-1}R^{T}\Delta Q_1^{T}\\
 	Q_1\Delta R W^{-1} & -Q_1\Delta Q_1^T
 	\end{array}\right)
-\end{equation}
+\]
 with $\Delta = (RW^{-1}R^T)^{-1}$. This concludes the proof.
 \end{pf}
 %
 Since the degeneracy variable $\beta$ does not appear in the
 primal optimiser, it does not affect the primal objective value of~\eqref{mpQP:primal}.
 However, substituting~\eqref{mpQP:solution} into the dual objective~\eqref{mpQP:dual} yields
-\begin{multline}
-    \mathcal D(\lambda(\theta,\beta),\theta) =  -\frac{1}{2}(N_\theta \theta + N_\beta \beta + n)^T H W^{-1}H^T 
-	(N_\theta \theta\\ + N_\beta \beta + n)
-	-(AW^{-1}c + 
-	f + S\theta)^T(N_\theta \theta + N_\beta \beta + n)\\ -\frac{1}{2}c^TW^{-1}c,
-\end{multline}
+\begin{align*}
+\mathcal D(&\lambda(\theta,\beta),\theta) = \\
+& {-\tfrac{1}{2}}(N_\theta \theta + N_\beta \beta + n)^T H W^{-1}H^T 
+	(N_\theta \theta + N_\beta \beta + n)\\
+& -(AW^{-1}c + 
+	f + S\theta)^T(N_\theta \theta + N_\beta \beta + n) -\tfrac{1}{2}c^TW^{-1}c,
+\end{align*}
 which is unbounded if
-\begin{equation}
+\[
 	(f^T+\theta^TS^T)N_\beta \neq 0
-\end{equation}
+\]
 and can be made arbitrarily small by the choice of $\beta$. Therefore we restrict $\theta$ to satisfy 
 \begin{equation}\label{mpQP:compatability:assumption}
 	N_\beta^Tf = -N_\beta^TS\theta,
 \end{equation} 
 so that the dual mpQP has a unique solution
-and the choice of $\beta$ does not affect either the primal nor the dual cost and can be used for
-any purpose. For a general mpQP~\eqref{mpQP:compatability:assumption} is a restriction on the set
+and the choice of $\beta$ does not affect either the primal or the dual cost and can be used for
+any purpose. For a general mpQP, condition~\eqref{mpQP:compatability:assumption} is a restriction on the set
 of parameters for which~\eqref{mpQP:primal} has a solution of the form~\eqref{mpQP:solution}.
 In our multi-stage min-max setup, the parameter is the optimiser of a subsequent optimisation
 problem and can be ensured to satisfy~\eqref{mpQP:compatability:assumption} by the so called 
 compatibility constraint. The optimal objective of~\eqref{mpQP:primal} is given by
 \begin{equation}\label{mpQP:cost:to:go}\begin{split}
-	V(\theta) = &\frac{1}{2}\theta^T M_\theta^T W M_\theta \theta + c^TM_\theta \theta
-\\&+ m^TWM_\theta+\frac{1}{2}m^T Wm + c^Tm\\
+	V(\theta) = &\frac{1}{2}\theta^T M_\theta^T W M_\theta \theta + c^TM_\theta \theta \\
+& + m^TWM_\theta+\frac{1}{2}m^T Wm + c^Tm\\
 =&\frac{1}{2} \theta^T W_\theta \theta + c^T_\theta \theta + d_\theta.
 \end{split}\end{equation}
 %
-Assume now that we want to solve
-\begin{equation}\label{mpQP:second:stage}
+Suppose now that we want to solve a problem that depends on the solution of~\eqref{mpQP:primal} and an
+additional parameter $\phi$:
+\begin{equation}\label{mpQP:second:stage} 
 	J(\phi) = \left\{\begin{array}{rl}
 	\min_\theta & \frac{1}{2}\theta^T\Phi\theta + g^T\theta + f + V(\theta)\\
 	\text{s.t.} & C\theta = e+T\phi
 	\end{array}\right.
 \end{equation}
-where the equality constraints include~\eqref{mpQP:compatability:assumption}. Since we know
-that the optimal cost-to-go $V(\theta)$ has the structure~\eqref{mpQP:cost:to:go}
-the problem~\eqref{mpQP:second:stage} reduces to a problem like~\eqref{mpQP:primal},
-which yields a solution like~\eqref{mpQP:solution}, i.e.
+where $\Phi$, $C$, $g$, $f$, $C$, $e$, $T$ are constants and
+the equality constraints include~\eqref{mpQP:compatability:assumption}. Since we know
+that the optimal cost-to-go $V(\theta)$ has the structure~\eqref{mpQP:cost:to:go},
+the problem~\eqref{mpQP:second:stage} reduces to a problem with the form of~\eqref{mpQP:primal},
+which yields a solution similar to~\eqref{mpQP:solution}, i.e.
 \begin{equation}
 \begin{split}
 	\theta &= K_\phi \phi + k\\
 	\eta &= L_\phi \phi + L_{\hat\beta} \hat\beta + l
 \end{split}
 \end{equation}
-with the dual variable~$\eta$, as long as $\Phi+W_\theta\succ 0$. Finally we note 
-that~\eqref{mpQP:compatability:assumption} is only nontrivial if~$H$ is rank deficient and only 
+where $\eta$ is the dual variable, and $\Phi+W_\theta\succ 0$ has been assumed. Finally we note 
+that~\eqref{mpQP:compatability:assumption} is only nontrivial if~$H$ is not right invertible and only 
 introduces as many constraints on~$\theta$ as there are linearly
 dependent rows in~$H$.
 
 In the solution of recursive min-max programs such as~\eqref{eq:the:problem} we use the composition of
-the stage optimisers, i.e. we use $x(\theta(\phi)) = M_\theta K_\phi \phi + (M_\theta k + m)$.
-Notice that this composition of optimisers is again an affine function of the parameter, in particular
-we will exploit the fact that changing the parameter along a line will translate to a line in the optimiser
-space as long as no activations or deactivations in the constraints occur. We will revisit this fact
+the stage optimisers, i.e. we use $y(\theta(\phi)) = M_\theta K_\phi \phi + (M_\theta k + m)$.
+Notice that this composition of optimisers is again an affine function of the parameter $\phi$, in particular
+we will exploit the fact that parameter variations along lines translate to lines in the optimiser
+space as long as no activations or deactivations of constraints occur. We will revisit this fact
 when we perform a line search in order to update the active constraints.
 
 
@@ -415,7 +420,8 @@ In this section we apply the results derived in section~\ref{sec:gen:mpQP} to
 the considered min-max robust control problem~\eqref{eq:the:problem}. We 
 define a recursion and assume the active set is known to obtain a closed solution for~\eqref{eq:the:problem}.
 %
-To use an active set solver for the problem:
+%To use an active set solver for the problem:
+First epx
 \begin{subequations}\label{eq:the:problem:reformulated}%
 \begin{equation}
 	J_{m}^\ast(x) = \min_u \max_{w,x^+} \tfrac{1}{2}\bigl(\norm{x}_Q^2+\norm{u}_R^2-\gamma^2
@@ -484,7 +490,7 @@ stage $m=1$ and the maximisation problem is given by:
 \end{equation}
 with $W_x^\prime, W_u^\prime$ and $w_c^\prime$ denoting the active rows of the right hand side 
 of~\eqref{eq:dist:cons}.
-With Lemma~\ref{thm:mpQP:solution} we obtain
+With Lemma~\ref{lem:mpQP:solution} we obtain
 \begin{equation}
       \left(\begin{array}{c}
       w^\ast \\
@@ -581,7 +587,7 @@ state~$x$ at that stage~$m$ or the state and the input at that stage. Henceforth
 with an index, e.g.~$x_m$ denotes the optimised state in stage $m$, that is $x^{+,\ast}$ at stage $m+1$.
 To ensure continuity of the dual variables we choose $\hat\zeta_m = \hat\beta_m$ and $\zeta_m=\beta_{m-1}$.
 The affine character of the solution of each sub-problem allows us to parametrise the entire trajectory
-with respect to parameters at stage~$m=N$, that is $x_N=\mathpzc x_0$ and $\beta_N$.
+with respect to parameters at stage~$m=N$, that is $x_N=\chi_0$ $x_N=\mathpzc x_0$ and $\beta_N$.
 
 We recursively define all primal and dual variables:
 \begin{equation}\label{eq:trajectory:affine:representation}
