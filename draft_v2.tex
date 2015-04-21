@@ -266,7 +266,7 @@ defines $\mathcal Z_1$ as
 \\
 	=&\begin{aligned}[t] & (\mathbb R^n \times\mathcal U)\cap \Bigl\{ (x,u): \\
 & \!\!\!\!\!\!
-\Lambda_{0,i}(Ax+Bu)+ \!\!\underbrace{\max_{j\in\{1,\dots,r\}}\Lambda_{0,i} Dw_j(x,u)}_{(i)}\leq\lambda_i, \, \forall i\in\mathcal I_0
+\Lambda_{0,i}(Ax+Bu)+ \!\!\underbrace{\max_{j\in\{1,\dots,r\}}\!\Lambda_{0,i} Dw_j(x,u)}_{(i)}\leq\lambda_i, \, \forall i\in\mathcal I_0
 	\Bigr\} \end{aligned}
 \end{aligned}
 \end{equation}
@@ -416,12 +416,12 @@ when we perform a line search in order to update the active constraints.
 
 
 \section{Solving min-max quadratic programs as multi-parametric quadratic programs}\label{sec:applied:mpQP}
-In this section we apply the results derived in section~\ref{sec:gen:mpQP} to
-the considered min-max robust control problem~\eqref{eq:the:problem}. We 
-define a recursion and assume the active set is known to obtain a closed solution for~\eqref{eq:the:problem}.
+In this section we apply the results derived in Section~\ref{sec:gen:mpQP} to the considered min-max robust
+control problem~\eqref{eq:the:problem}. For the case that the set of active constraints is known, we define a
+recursion that provides a closed solution for~\eqref{eq:the:problem}.
 %
 %To use an active set solver for the problem:
-First epx
+We first express~\eqref{eq:the:problem} in the form
 \begin{subequations}\label{eq:the:problem:reformulated}%
 \begin{equation}
 	J_{m}^\ast(x) = \min_u \max_{w,x^+} \tfrac{1}{2}\bigl(\norm{x}_Q^2+\norm{u}_R^2-\gamma^2
@@ -442,41 +442,42 @@ subject to
 	C_m^x x + C_m^u u  = {\bf{1}}
 \end{gather}
 \end{subequations}
-with~$J_0^\ast(x^+) = \frac{1}{2}\norm{x^+}_P^2$ and $m=1,\dots,N$. Notice that explicitly using
+with~$J_0^\ast(x^+) = \frac{1}{2}\|x^+\|_{P_0}^2$ and $m=1,\dots,N$. Notice that explicitly using
 $u\in\mathcal U$ is no longer necessary as satisfaction of the input constraints is intrinsic
 if $(\cdot,u)\in\mathcal Z_m$.
 We split the sequence of  min-max problems into a sequence of multi-parametric 
-quadratic programs. Starting with the maximisation at stage $m=1$ and using a backward sweep approach (see e.g.~\cite{Bryson:1975}), 
-we obtain
-\begin{equation}
+quadratic programs. Starting with the maximisation at stage $m=1$ and using a backward sweep approach
+\citep[see e.g.][]{Bryson:1975}, 
+this yields
+\[
 	\hat J_m^\ast(x,u) = \left\{\begin{split}
-    \max_{w,x^+} & -\frac{\gamma^2}{2}\norm{w}^2 + J_{m-1}^\ast(x^+)\\
-    \text{s.t.} & \begin{array}{rcl}
+    \max_{w,x^+}\ & {-\frac{\gamma^2}{2}}\norm{w}^2 + J_{m-1}^\ast(x^+)\\
+    \text{s.t. }\  & \begin{array}[t]{rcl}
     Gw & \leq & H(x,u)\\
     x^+ & = & Ax + Bu + Dw\\
     \hat C_m x^+ &=& -{\bf{1}}
     \end{array}
     \end{split}\right.
-\end{equation}
+\]
 and
-\begin{equation}
+\[
 	J_m^\ast(x) = \left\{\begin{split}
-    \min_{u} & \frac{1}{2}\left(\norm{x}^2_Q + \norm{u}_R^2\right) + \hat J_m^\ast(x,u)\\
-    \text{s.t.} & \begin{array}{ccccl}
+    \min_{u}\ & \frac{1}{2}\left(\norm{x}^2_Q + \norm{u}_R^2\right) + \hat J_m^\ast(x,u)\\
+    \text{s.t.}\ & \begin{array}[t]{ccccl}
     \Xi^x_m x &+& \Xi^u_m u &\leq &\xi_m\\
     C_m^x x &+ & C^u_m u & = & {\bf{1}}
     \end{array}
     \end{split}
     \right.
-\end{equation}
+\]
 Suppose the active set is given, i.e.~it is known which inequality constraints hold with equality. 
 For notational convenience we denote active inequalities with $(\cdot)^\prime$, e.g.  $(\Xi^x_m)^\prime x + (\Xi^u_m)^\prime u = \xi_m^\prime$. 
-Since $J^\ast_0(x^+) = \frac{1}{2}\norm{x^+}_{P_0}^2$ is a given function, compatibility constraints are not necessary at 
+Given that $J^\ast_0(x^+) = \frac{1}{2}\|x^+\|_{P_0}^2$, compatibility constraints are not necessary at 
 stage $m=1$ and the maximisation problem is given by:
-\begin{equation}
+\[
 	\hat J_1^\ast(x,u) = \left\{\begin{split}
-	\max_{w,x^+} & -\frac{\gamma^2}{2}\norm{w}^2 + J_{0}^\ast(x^+)\\
-	\text{s.t.} & 
+	\max_{w,x^+} \ & {-\frac{\gamma^2}{2}}\norm{w}^2 + J_{0}^\ast(x^+)\\
+	\text{s.t. }\ & 
 	\underbrace{\left(\begin{array}{cc}
 	G^\prime & 0 \\ -D & I
 	\end{array}\right)}_{\bar H}
@@ -487,11 +488,11 @@ stage $m=1$ and the maximisation problem is given by:
 	\left(\begin{array}{c}x \\ u \end{array}\right) + \underbrace{\left(\begin{array}{c}
 	w_c^\prime \\ 0\end{array}\right)}_{\bar f}
 	\end{split}\right.
-\end{equation}
+\]
 with $W_x^\prime, W_u^\prime$ and $w_c^\prime$ denoting the active rows of the right hand side 
 of~\eqref{eq:dist:cons}.
 With Lemma~\ref{lem:mpQP:solution} we obtain
-\begin{equation}
+\[
       \left(\begin{array}{c}
       w^\ast \\
       x^{+,\ast} \\
@@ -502,9 +503,9 @@ With Lemma~\ref{lem:mpQP:solution} we obtain
       \left(\begin{array}{c}0\\ 0 \\ N^{\eta}_{\hat\beta} \\ N^{\lambda}_{\hat\beta}
       \end{array}\right)\hat\beta + \left(\begin{array}{c}m^w\\ m^{x^+} \\ n^{\eta} \\ n^{\lambda}
       \end{array}\right)
-\end{equation}
+\]
 where $\eta^\ast$ denotes the dual variable to the active inequality constraints and hence must
-be non-negative, i.e.~$\eta^\ast\geq0$. Notice that we omitted stage indices to avoid overloaded notation.
+be non-negative, i.e.~$\eta^\ast\geq0$. Notice that we omit stage indices to avoid overloaded notation.
 The cost-to-go for the minimisation problem at stage $m=1$ is
 \begin{equation}
 	\hat J_1^\ast(z) = \frac{1}{2}z^T
@@ -581,7 +582,7 @@ known.
 In the previous section we presented a recursive algorithm to solve~\eqref{eq:the:problem}
 when all active constraints are known. In this section we present a method to find the active
 constraints for a given initial state $\mathpzc x_e$ using a line search starting from a state $\mathpzc x_0$
-for which the active constraints are known. In section~\ref{sec:gen:mpQP} and~\ref{sec:applied:mpQP}
+for which the active constraints are known. In Section~\ref{sec:gen:mpQP} and~\ref{sec:applied:mpQP}
 we derived an explicit solution for each sub-optimisation program which depended affinely on the
 state~$x$ at that stage~$m$ or the state and the input at that stage. Henceforth we denote the stage 
 with an index, e.g.~$x_m$ denotes the optimised state in stage $m$, that is $x^{+,\ast}$ at stage $m+1$.
