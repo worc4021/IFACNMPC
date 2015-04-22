@@ -1,36 +1,42 @@
 %!TEX root = draft_v2.tex
 \section{Complexity}\label{sec:complexity}
-The computational complexity of the considered algorithm can easily be bounded. In order to give implementation
-free bounds we specify only floating point operations (flops). For each given active set the solver has
-to solve at most $2N$ mpQPs, which is done by decomposing the problem as stated in section~\ref{sec:gen:mpQP}.
-For each mpQP the main computational effort is used the computation of $\Sigma$ in~\eqref{seq:sigma}.
-In the case~\eqref{eq:sigma:normal}, this requires a QR decomposition with $2(mn^2-n^3/3)$ flops 
-($m$ the number of active constraints and $n$ the number of optimisation variables), the inversion of a 
-triangular matrix with $(m^3-m)/6$ flops and several matrix multiplications with $mpn$ flops (for the multiplication
-of a $m\times n$ matrix with a $n\times p$ matrix).
-The computationally more expensive case~\eqref{eq:sigma:degen}, requires a QR decomposition, the inversion of a
-definite matrix $W$, which can be done using the Cholesky decomposition with $n^3/3$ flops and the inversion of a 
-triangular matrix, it again requires several matrix multiplications and additions with $mn$ flops and one additional 
-inversion of a definite matrix $\Delta$. In the worst case this adds up to $11n^3+n^2-n/3$ flops to obtain $\Sigma$
-in the worst case scenario. The solution to the problem is then the result of a matrix multiplication, in order to 
-be able to solve the subsequent mpQP the matrix $W_\theta$ and the vector $c_\theta$ have to be computed so that the over
-all flop count in the worst case adds up to $11n^3+n^2+2/3n+2n^2 n_\theta$, where $n_\theta$ denotes the dimension of the
-parameter~$\theta$. At each stage two mpQPs have to be solved recursively, so that in the worst case the recursion
-for the entire horizon requires $N(2 n_x+5 n_x^2+101 n_x^3+8 n_x^2 (n_u+n_x))$ flops.
+We next discuss bounds on the computational complexity of the algorithm outlined in Section~\ref{sec:line:search}.
+%The computational complexity of the considered algorithm can easily be bounded. 
+%In order to give implementation-free bounds  these are expressed 
+%These are given in terms of floating point operations
+%(flops). 
+For a given active set at most $2N$ mpQPs must be solved, and this is done by decomposing the
+problem as stated in section~\ref{sec:gen:mpQP}.  For each mpQP the main computational effort is to
+determine $\Sigma$ in~\eqref{seq:sigma}. In the case of~\eqref{eq:sigma:normal} this requires a QR
+decomposition with $2(mn^2-n^3/3)$ floating point operations (flops), where $m$ is the number of active constraints and $n$ the number of
+optimisation variables, plus inversion of a triangular matrix with $(m^3-m)/6$ flops and several matrix
+multiplications with $mpn$ flops (for the multiplication of a $m\times n$ matrix with a $n\times p$
+matrix). The computationally more expensive case of~\eqref{eq:sigma:degen} requires a QR decomposition,
+inversion of a definite matrix $W$ using Cholesky decomposition with $n^3/3$ flops, inversion of a triangular
+matrix, several matrix multiplications and additions with $mn$ flops, and inversion of a definite matrix
+$\Delta$. In the worst case this adds up to at most $11n^3+n^2-n/3$ flops to obtain $\Sigma$. The solution to
+the problem is then the result of a matrix multiplication, and, in order to be able to solve the subsequent
+mpQP, the matrix $W_\theta$ and the vector $c_\theta$ also need to be computed. Hence the overall flop count
+in the worst case adds up to $11n^3+n^2+2/3n+2n^2 n_\theta$, where $n_\theta$ denotes the dimension of the
+parameter~$\theta$. 
+%At each stage two mpQPs have to be solved recursively, so that 
+In the worst case the
+recursion for the entire horizon therefore requires $N(2 n_x+5 n_x^2+101 n_x^3+8 n_x^2 (n_u+n_x))$ flops.
 
-To the authors' best knowledge there are no sensible bounds on the number of
-active set changes, so that no bound can be given on the number of times the sequence has to be solved.
-In section~\ref{sec:example} we state the case of an example system with an implementation in MATLAB.
+The number of active set changes needed to obtain the active set corresponding to the current plant state
+is necessarily finite, since this number cannot exceed the total number of possible active sets. However upper
+bounds on this number are unrealistically large (except in pathological cases) and hence of little use in bounding the number of times that the recursion of
+Section~\ref{sec:line:search} needs to be solved. Instead we give the typical execution time for an example
+system with an implementation in MATLAB  in section~\ref{sec:example}.
 
 
 \section{Example}\label{sec:example}
-In this section we present a numerical simulation for a simplified levitating ball model, as derived in 
-by~\cite{Schaich:2015}. The dynamics of the nonlinear system are given $m\ddot y = m g - c\frac{i^2}{y^2}$,
+In this section we present a numerical simulation for a simplified levitating ball model, as derived in~\cite{Schaich:2015}. The dynamics of the nonlinear system are given $m\ddot y = m g - c\frac{i^2}{y^2}$,
 where $m$ denotes the mass of the ball, $g$ denotes the gravitation constant, $c$ denotes a constant depending
 on the coil, $y$ the vertical distance to the coil, the simplification is due to neglecting inductive dynamics 
 and assuming we that can influence the current~$i$ directly. Figure~\ref{fig:levitating:ball} illustrates the setup.
 Choosing the state $x=(y,\dot y)$ and the input $u=i$ we obtain a state space representation which depends nonlinearly
-on both the state and the input. An equilibrium is given for all $u=\sqrt{\frac{gm}{c}}x_1$.
+on both the state and the input. For any $x_1>0$, the system is in equilibrium if $x_2=0$ and $u=\sqrt{\frac{gm}{c}}x_1$.
 
 Linearising the nonlinear differential 
 equation $\dot x = f(x,u)$ around an equilibrium point $(\hat x, \hat
@@ -58,30 +64,34 @@ B &= T_s \frac{\partial f}{\partial u}(\hat x,\hat u)
 \end{aligned}
 \]
 %
-A representation of the form~\eqref{eq:the:problem} can be obtained by sampling input and state
-constraints and using the mean-value theorem, as elaborated by~\cite{Schaich:2015}. This leads
+A representation of the form~\eqref{eq:the:problem}, in which the disturbance $w$ accounts for linearisation
+errors, can be obtained by sampling input and state
+constraints and using the mean-value theorem \citep[see][]{Schaich:2015}. This leads
 to a disturbance representation of the form $\mathcal W(x,u)=\{w\in\mathbb R^n: 
 \min_{k\in\mathcal S_w}\{ H_{k,i}^x x + H_{k,i}^u u\} \leq w_i \leq \max_{k\in\mathcal S_w} 
 \{ H_{k,i}^x x + H_{k,i}^u u \} \}$,
 where ${k\in\mathcal S_w}$ denotes the sample index and $i$ the row number. This point-wise polytopic representation
-in addition with a polyhedral representation of state constraints allows us to compute a polyhedral
+together with a polyhedral representation of state constraints allows us to compute a polyhedral
 MRPI set~$\mathcal X^\infty$. As a terminal feedback controller $K$ we use the solution to the robust 
 Lyapunov condition $V(x)-V((A+BK)x+Dw)\leq \gamma^2 w^Tw$ 
 with $V(x)=x^T P_0 x\geq0$, i.e. $x^TP_0x - ((A+BK)x+Dw)^TP_0((A+BK)x+Dw)\geq x^T(Q+K^TRK)x -\gamma^2 w^T w$, 
-see e.g.~\cite{Boyd:94}. This semi-definite program also returns a value for $\gamma^2$. Starting from 
+\cite[see e.g.][]{Boyd:94}. This semi-definite program can also be used to find the minimum value of $\gamma^2$. Starting from 
 a polyhedral MRPI set~$\mathcal X^\infty$ we apply the algorithm presented in section~\ref{sec:preliminaries}
 to obtain the necessary stage constraints~$\mathcal Z_k$. At this stage we can introduce numerical values
-for individual parameters, we use $T_s=30ms, C=1\frac{kg m^3}{A^2s^2}, m=100g, \hat x_1 = 50mm$ and $\mathcal X=\{x:
-\abs{x_1- \hat x_1}\leq 1mm\wedge \abs{x_2}\leq 105\frac{mm}{s}\}$, $\mathcal U=\{u:\abs{ u-\hat u}\leq10mA\}$.
+for individual parameters: $T_s=30\,\text{ms}$, $C=1\,\frac{\text{kg m}^3}{\text{A}^2\text{s}^2}$,
+$m=100\,\text{g}$, $\hat x_1 = 50\,\text{mm}$ and $\mathcal X=\{x:
+\abs{x_1- \hat x_1}\leq 1\,\text{mm}\wedge \abs{x_2}\leq 105\,\frac{\text{mm}}{\text{s}}\}$, $\mathcal
+U=\{u:\abs{ u-\hat u}\leq 10 \,\text{mA}\}$.
 To obtain $\mathcal W(x,u)$ we sample $\mathcal X$ and $\mathcal U$ with a total of 25 samples, i.e. the cardinality
 of $\mathcal S_w$ is 10. In the simulation we use horizon length $N=5$. We perform a cold started line search from $\chi_0=(0,0)$
 to the outer bound of the constraint set at $\chi_e=(1,-30)$, the resulting trajectories at the boundaries of
 individual active sets are plotted in figure~\ref{fig:plot}.
 
-The simulation was implemented in MATLAB only using non optimised built-in functions for the main computational
+The simulation was implemented in MATLAB only using non-optimised built-in functions for the main computational
 purposes. In the simulation illustrated in figure~\ref{fig:plot} there were a total of 10 iterations required,
-out of which 7 correspond to changes of the dominating right hand side of $\mathcal W(x,u)$, for which no recomputation
-of the solution is necessary. Performing the entire linesearch to the boundary of the feasible set took $0.3765s$.
+out of which 7 correspond to changes of the dominating right hand side of $\mathcal W(x,u)$, for which no
+recomputation of the solution is necessary. For $\chi_e$ on the boundary of the feasible set
+the solution time is less than $0.5\, \text{s}$ in total (using a MacBook Pro with a $2.3\,\text{GHz}$ quad-core processor).
 
 \begin{figure}
 \centering

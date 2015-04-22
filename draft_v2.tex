@@ -67,7 +67,7 @@ rainer.schaich@eng.ox.ac.uk, mark.cannon@eng.ox.ac.uk).}
   The formulation encompasses problems involving model uncertainty arising from unknown system
   parameters and linearisation errors. We propose a computationally efficient method for the online
   optimization of a receding horizon min-max cost over the class of feedback strategies subject robust
-  constraint satisfaction and provide illustrative numerical examples.
+  constraint satisfaction and provide an illustrative numerical example.
 \end{abstract}
 
 \begin{keyword}
@@ -120,11 +120,13 @@ errors, and the approach of this paper is therefore able to handle linearisation
 %, as will be shown in an example.
 
 After describing the control problem in Section~\ref{sec:problem:statement} we summarise preliminary 
-results which are necessary to formulate the considered problem explicitly (Section~\ref{sec:preliminaries}).
+results which are necessary to formulate the considered problem explicitly in Section~\ref{sec:preliminaries}.
 Section~\ref{sec:gen:mpQP} discusses the recursive solution for equality constrained min-max recursions, one of 
 the essential parts of the active set solver, and this is applied to the min-max RMPC problem in Section~\ref{sec:applied:mpQP}
-for the case that the active set of constraints is known. A line search to determine the active set of constraints is presented
-in Section~\ref{sec:line:search}. The application of the proposed algorithm to an example problem is presented in 
+for the case that the active set of constraints is known. A line search to determine the active set of
+constraints is described 
+in Section~\ref{sec:line:search} and bounds on the computational complexity of the approach are discussed in
+Section~7. An application of the proposed algorithm to an example problem is presented in 
 Section~\ref{sec:example} and conclusions are drawn in Section~\ref{sec:conclusion}.
 
 
@@ -667,6 +669,11 @@ as long as no inequality constraints would be violated, i.e. as long as no dual 
 \input{example.tex}
 
 \section{Conclusion}\label{sec:conclusion}
+We have proposed a receding horizon controller for linearly constrained linear systems with unknown
+disturbances that are subject to state and input dependent bounds. The optimisation of predicted feedback laws
+is performed using an efficient specialised active set solver. Future work will consider how to limit the number of active set changes while retaining
+the guarantee of closed loop stability.
+
 
 \bibliographystyle{ifacconf}        % Include this if you use bibtex 
 \bibliography{MyLib}       % and a bib file to produce the 
