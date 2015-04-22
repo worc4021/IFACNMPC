@@ -343,19 +343,21 @@ For the case that rank$(H)=n_y$ (i.e.\ $H$ has full rank and $n_y<n_\lambda$),
 using the QR-decomposition \citep[e.g.][]{Nocedal:2006} of $H=(Q_1,Q_2)\cdot(R^T,0)^T$ the solution 
 is given by $(m^T,n^T)^T = \Sigma (-c^T,f^T)^T$, $(M_\theta^T,N_\theta^T)^T = 
 \Sigma (0,S^T)^T$ and $N_\beta=Q_2$, where 
-\[
+\begin{subequations}\label{seq:sigma}
+\begin{equation}\label{eq:sigma:normal}
 	\Sigma = \left(\begin{array}{cc}
 	0 & R^{-1}Q_1^T \\
 	Q_1 R^{-T} & -Q_1R^{-T}WR^{-1}Q_1^T
 	\end{array}\right) .
-\]
+\end{equation}
 On the other hand if rank$(H)<\min\{n_y,n_\lambda\}$ (so that $H$ is rank deficient), then
-\[
+\begin{equation}\label{eq:sigma:degen}
 	\Sigma = \left(\begin{array}{cc}
 	W^{-1}-W^{-1}R^T\Delta RW^{-1} & W^{-1}R^{T}\Delta Q_1^{T}\\
 	Q_1\Delta R W^{-1} & -Q_1\Delta Q_1^T
 	\end{array}\right)
-\]
+\end{equation}
+\end{subequations}
 with $\Delta = (RW^{-1}R^T)^{-1}$. This concludes the proof.
 \end{pf}
 %

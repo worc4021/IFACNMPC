@@ -2,12 +2,23 @@
 \section{Complexity}\label{sec:complexity}
 The computational complexity of the considered algorithm can easily be bounded. In order to give implementation
 free bounds we specify only floating point operations (flops). For each given active set the solver has
-to solve at most $2N$ mpQPs, which is done by decomposing the problem as stated in section~\ref{sec:gen:mpQP},
-in the worst case this requires one QR decomposition, with $\frac{4}{3}n^3$ flops, and one Cholesky decomposition,
-with $\frac{n^3}{3}$ flops, where $n$ is the number of optimisation variables. Solving the worst case problem
-on one stage therefore requires $\frac{5}{3}(2n_x^3+n_u^3)$ flops, in the worst case $N$ stages need to be solved,
-so that the worst case computational burden for the solution of the mpQP sequence is given 
-by~$\frac{5N}{3}(2n_x^3+n_u^3)$. To the authors' best knowledge there are no sensible bounds on the number of
+to solve at most $2N$ mpQPs, which is done by decomposing the problem as stated in section~\ref{sec:gen:mpQP}.
+For each mpQP the main computational effort is used the computation of $\Sigma$ in~\eqref{seq:sigma}.
+In the case~\eqref{eq:sigma:normal}, this requires a QR decomposition with $2(mn^2-n^3/3)$ flops 
+($m$ the number of active constraints and $n$ the number of optimisation variables), the inversion of a 
+triangular matrix with $(m^3-m)/6$ flops and several matrix multiplications with $mpn$ flops (for the multiplication
+of a $m\times n$ matrix with a $n\times p$ matrix).
+The computationally more expensive case~\eqref{eq:sigma:degen}, requires a QR decomposition, the inversion of a
+definite matrix $W$, which can be done using the Cholesky decomposition with $n^3/3$ flops and the inversion of a 
+triangular matrix, it again requires several matrix multiplications and additions with $mn$ flops and one additional 
+inversion of a definite matrix $\Delta$. In the worst case this adds up to $11n^3+n^2-n/3$ flops to obtain $\Sigma$
+in the worst case scenario. The solution to the problem is then the result of a matrix multiplication, in order to 
+be able to solve the subsequent mpQP the matrix $W_\theta$ and the vector $c_\theta$ have to be computed so that the over
+all flop count in the worst case adds up to $11n^3+n^2+2/3n+2n^2 n_\theta$, where $n_\theta$ denotes the dimension of the
+parameter~$\theta$. At each stage two mpQPs have to be solved recursively, so that in the worst case the recursion
+for the entire horizon requires $N(2 n_x+5 n_x^2+101 n_x^3+8 n_x^2 (n_u+n_x))$ flops.
+
+To the authors' best knowledge there are no sensible bounds on the number of
 active set changes, so that no bound can be given on the number of times the sequence has to be solved.
 In section~\ref{sec:example} we state the case of an example system with an implementation in MATLAB.
 
