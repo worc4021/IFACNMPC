@@ -1,14 +1,11 @@
 %!TEX root = draft_v2.tex
 \section{Complexity}\label{sec:complexity}
 We next discuss bounds on the computational complexity of the algorithm outlined in Section~\ref{sec:line:search}.
-%The computational complexity of the considered algorithm can easily be bounded. 
-%In order to give implementation-free bounds  these are expressed 
-%These are given in terms of floating point operations
-%(flops). 
 For a given active set at most $2N$ mpQPs must be solved, and this is done by decomposing the
 problem as stated in section~\ref{sec:gen:mpQP}.  For each mpQP the main computational effort is to
 determine $\Sigma$ in~\eqref{seq:sigma}. In the case of~\eqref{eq:sigma:normal} this requires a QR
-decomposition with $2(mn^2-n^3/3)$ floating point operations (flops), where $m$ is the number of active constraints and $n$ the number of
+decomposition with $2(mn^2-n^3/3)$ floating point operations (flops, see e.g.~\cite{Golub:1996}), 
+where $m$ is the number of active constraints and $n$ the number of
 optimisation variables, plus inversion of a triangular matrix with $(m^3-m)/6$ flops and several matrix
 multiplications with $mpn$ flops (for the multiplication of a $m\times n$ matrix with a $n\times p$
 matrix). The computationally more expensive case of~\eqref{eq:sigma:degen} requires a QR decomposition,
