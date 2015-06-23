@@ -108,7 +108,7 @@ An alternative approach that similarly exploits the piecewise affine structure o
 less redundancy, was proposed by~\cite{Buerger:2011} and extended in~\cite{Buerger:ACC}. In this work an active set
 solver is designed to solve a sequence of min-max problems explicitly online. 
 
-In all of this work and, to the authors' best knowledge, in all of the published literature on algorithmic
+In all aforementioned work and, to the authors' best knowledge, in all of the published literature on algorithmic
 solutions to the RMPC problem, the disturbances are confined to sets that are assumed to be constant,
 i.e.~independent of the system state and control inputs. Recent algorithmic advances~\citep{Schaich:2015}
 make it possible to treat polytopic disturbance sets that depend in an affine manner on the system state and the control
@@ -117,8 +117,12 @@ current paper to embed affine state and input dependent disturbance constraints 
 active set RMPC solver framework proposed by~\cite{Buerger:2011}. Disturbances that belong to sets which depend
 on model states and inputs can account for multiplicative model uncertainty as well as linearisation
 errors, and the approach of this paper is therefore able to handle linearisation errors in RMPC non-conservatively.
-%, as will be shown in an example.
+\textcolor{red}{\cite{Rakovic:2006} proposes an algorithm with which reachable sets can be computed when the disturbance
+is a realisation of a set defined on the product space of the disturbance the state and the input, i.e. rather
+then an explicit dependence of the set on the state and input it is implicit. Hence the work discussed in
+this paper is not covered by the analysis by~\cite{Rakovic:2006}.}
 
+This paper is structured as follows: 
 After describing the control problem in Section~\ref{sec:problem:statement} we summarise preliminary 
 results which are necessary to formulate the considered problem explicitly in Section~\ref{sec:preliminaries}.
 Section~\ref{sec:gen:mpQP} discusses the recursive solution for equality constrained min-max recursions, one of 
@@ -163,8 +167,10 @@ linear-quadratic problem formulation. Thus we assume linear dynamics
 \end{equation}
 %
 where $A,B,D$ are real matrices of appropriate dimension, $x,  x^+\in\mathcal X\subseteq\mathbb R^n$ denote the state 
-and successor state respectively, $u\in\mathcal U=\{u:Fu\leq{\bf{1}}\}\subset\mathbb R^p$ is the control input
-and $w\in\mathcal W(x,u)\subset\mathbb R^q$ is an unknown disturbance input. The disturbance set $\mathcal
+and successor state respectively, $u\in\mathcal U=\{u:F_iu\leq 1\,\forall i\in\mathcal I^{\mathcal U}\}
+\subset\mathbb R^p$ is the control input
+and $w\in\mathcal W(x,u)\subset\mathbb R^q$ is an unknown disturbance input, $\mathcal I^{\mathcal U}$ denotes
+the index set of the constraint set~$\mathcal U$. The disturbance set $\mathcal
 W(x,u)$ is assumed to have a known dependence on the values of $x$ and $u$, according to
 %
 \begin{equation}\label{eq:PWA:def:disturbance}
@@ -174,9 +180,9 @@ W(x,u)$ is assumed to have a known dependence on the values of $x$ and $u$, acco
 where $H(x,u)$ is an elementwise convex, piecewise affine function. The control objective is to minimize the
 worst case value, over all future model uncertainty, of the cost
 \begin{equation}\label{eq:quadratic:cost}
-\sum_{k=0}^\infty \bigl( \|x_k\|_Q^2 + \|u_k\|_R^2 - \gamma^2 \|w_k\|^2 \bigr) ,
+\sum_{k=0}^\infty \bigl( \norm{x_k}_Q^2 + \norm{u_k}_R^2 - \gamma^2 \norm{w_k}^2 \bigr) ,
 \end{equation}
-where the subscript $k$ denotes the realisation of a variable at time $k$, $\|x\|_Q^2$ denotes the quadratic
+where the subscript $k$ denotes the realisation of a variable at time $k$, $\norm{x}_Q^2$ denotes the quadratic
 form $x^TQx$, $Q$ and $R$ are given positive definite
 matrices and $\gamma$ is a given scalar weight that controls the $l^2$-gain of the closed loop system from the
 disturbance sequence to the state and control sequences.
@@ -215,8 +221,9 @@ with
 \end{equation}
 \end{subequations}
 Thus the constraints $(x,u)\in\mathcal Z_m$ ensure that the terminal state, namely $x^+$ at $m=1$, is
-contained in $\mathcal{X}^\infty$. We define $\mathcal{X}^\infty$ as the maximal robust positive invariant (MRPI) set \citep{blanchini:2007}), for the closed-loop system governed by a fixed state feedback controller
-$u=Kx$:
+contained in $\mathcal{X}^\infty$. We define $\mathcal{X}^\infty$ as the maximal robust positive invariant 
+(MRPI) set \citep{blanchini:2007}), for the closed-loop system governed by a fixed stabilising\NOTE{Really?! We don't really need it to be stabilising for this definition} state feedback 
+controller $u=Kx$:
 %
 \begin{equation}\label{eq:definition:MRPI:set}
 	\mathcal X^\infty = \{x: (A+BK)x + Dw \in \mathcal X^\infty \forall w\in\mathcal W(x,Kx)\},
@@ -232,11 +239,10 @@ solution to the online MPC optimization of (\ref{eq:the:problem}a-e).
 
 
 \section{Controllable sets}\label{sec:preliminaries}
-In this section we summarise results on controllable sets that allow the constraints of the problem~\eqref{eq:the:problem} to be to formulated
-in a convenient way. The following result shows that the MRPI set (\ref{eq:definition:MRPI:set}) associated
-with the pointwise polytopic set~\eqref{eq:PWA:def:disturbance} is polytopic if $H$ is elementwise convex and
-piecewise affine. For a proof and detailed discussion of this result we refer the reader
-to~\cite{Schaich:2015}.
+In this section we summarise results on controllable sets that allow the constraints of the problem~\eqref{eq:the:problem} 
+to be to formulated in a convenient way. The following result shows that the MRPI set (\ref{eq:definition:MRPI:set}) 
+associated with the pointwise polytopic set~\eqref{eq:PWA:def:disturbance} is polytopic if $H$ is elementwise convex 
+and piecewise affine. For a proof and detailed discussion of this result we refer the reader to~\cite{Schaich:2015}.
 %
 \begin{lem}\label{thm:MRPI:set:is:polytopic}
 Let $\mathcal X \subseteq \{x:\Gamma x\leq{\bf{1}}\wedge-\Gamma x\leq{\bf{1}}\}$ be polyhedral, and the pair $(A+BK,\Gamma)$ be
@@ -282,7 +288,8 @@ defines $\mathcal Z_1$ as
 Since the maximisation $(i)$ in \eqref{eq:derivation:of:mpLP:stage:constraints} is a multi-parametric
 linear program, its solution is piecewise affine in $(x,u)$. 
 Therefore the set $\mathcal Z_1$ has a representation
-$\mathcal Z_1=\{(x,u):\Xi^x_{1,i}x+\Xi^u_{1,i}u\leq\xi_{1,i},i\in\mathcal J_1\}$. The projection~$\mathcal X_1$ 
+$\mathcal Z_1=\{(x,u):\Xi^x_{1,i}x+\Xi^u_{1,i}u\leq\xi_{1,i},i\in\mathcal J_1\}$, with~$\mathcal J_1$ denoting
+its index set. The projection~$\mathcal X_1$ 
 of $\mathcal Z_1$ onto~$\mathbb R^n$ therefore has the representation~$\mathcal X_1 = \{x:\Lambda_{1,i} x\leq\lambda_{1,i},i\in\mathcal I_1\}$.
 From here the determination of $\mathcal Z_k$ and $\mathcal X_k$ follows recursively. We are now able to formulate 
 all constraints in~\eqref{eq:the:problem} as inequalities. In the next section we discuss a method of solving
@@ -619,14 +626,26 @@ We recursively define all primal and dual variables:
 \end{equation}
 Notice that $\Phi^{(\cdot)}_m$ is only non-trivial if the associated sub-problem is degenerate. The
 representation~\eqref{eq:trajectory:affine:representation} is valid as long as the constraint set remains
-unchanged, i.e.\ the inequalities that hold with equality do not change. Starting from the known set of active
+unchanged, i.e.\ the inequalities that hold with equality do not change.
+\textcolor{red}{With~\eqref{eq:trajectory:affine:representation} we can justify the proposed choice of the degeneracy parameters
+$\beta_m$ and $\hat\beta_m$. When constraints are activated their dual variable starts at zero and changes
+in an affine way in the appropriate direction, at the moment a linearly dependent constraint is activated, i.e. the
+constraints become rank deficient, three things happen: The dual variable to the degenerate constraint suddenly
+depends on an additional degeneracy parameter, a compatibility constraint is introduced in the predecessor
+problem and that compatibility constraint's dual variable is given as a affine function starting at zero,
+the remaining problem is not affected by the degeneracy. By the proposed choice we couple
+the degeneracy variable to dual variable of the associated compatibility constraint, hence adding an 
+additional affine function to the already affine representation of the dual variable and thereby ensuring continuity
+of the dual variable.}
+
+Starting from the known set of active
 constraints at $\chi_0$ we perform a line search towards $\chi_e$, i.e. we vary
 $x_N(\alpha)=\chi_0+ \alpha(\chi_e-x_0)$ for $0\leq\alpha\leq1$. We
 use~\eqref{eq:trajectory:affine:representation} to check all inactive constraints with the primal variables
 $x_m(x_N(\alpha)),\, u_m(x_N(\alpha))$ and~$w_m(x_N(\alpha))$, and all dual variables corresponding to
 inequality constraints to check whether constraints need to be deactivated. That is, we search for the
 smallest $\alpha$ such that $\Xi_{m,i}^x x_m(x_N(\alpha))+\Xi_{m,i}^u u_m(x_N(\alpha))=\xi_{m,i}$ or
-$G_iw_m(x_N(\alpha))=1$ or $\eta_{m,i}(x_N(\alpha),\beta_N)=0$ for some $m$ and $i$, and update the set of active
+$G_iw_m(x_N(\alpha))=1$ or $\eta_{m,i}(x_N(\alpha),\allowbreak \beta_N)=0$ for some $m$ and $i$, and update the set of active
 constraints accordingly, i.e. if an additional constraint is activated it is introduced to the equality
 constraint mpQP recursion and the updated problems are solved again recursively, if a constraint is
 deactivated because the smallest $\alpha$ corresponds to the zero-crossing of its dual variable then it is
