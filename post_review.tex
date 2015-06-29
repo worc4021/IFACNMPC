@@ -89,7 +89,9 @@ in the RMPC literature \citep[e.g.][]{Bemporad:1999,Bemporad:2003,Lee:1997}.
 The predicted control law may be an open-loop policy, in which case the controller chooses its strategy for
 the whole prediction horizon before the adversary decides its strategy, or a closed-loop policy in which the
 horizon is split into stages and the actions of controller and adversary at each stage depend on the
-outcome of the previous stage). Theoretical properties of these controllers are well understood \citep[e.g.][]{Mayne:2000}. However, the numerical computation of robust model predictive controllers still poses
+outcome of the previous stage). Theoretical properties of these controllers are well 
+understood \citep[e.g.][]{Mayne:2000}. However, the numerical computation of robust model predictive 
+controllers still poses
 a challenge and only few tractable solutions have been proposed.
 
 Various strategies have been proposed to solve RMPC problems for linear systems subject to linear state and
@@ -108,11 +110,17 @@ An alternative approach that similarly exploits the piecewise affine structure o
 less redundancy, was proposed by~\cite{Buerger:2011} and extended in~\cite{Buerger:ACC}. In this work an active set
 solver is designed to solve a sequence of min-max problems explicitly online. 
 
-\edit{In almost all existing methods for RMPC, the model disturbances are assumed to be confined to sets that are constant, i.e.~independent of the system state and control inputs. Disturbances that depend on model states (or control inputs) are considered in~\cite{Kuntsevich:1995,Rakovic:2006}. However general formulations of state and input dependence can result in non-convex constraints~\citep{Rakovic:2006}. To avoid this we make use of recent algorithmic advances~\citep{Schaich:2015} that enable a class of polytopic disturbance sets that depend affinely on the system state and control input to be handled using convex constraints. This provides an algorithmic and analytical framework which is used in the
+In almost all existing methods for RMPC, the model disturbances are assumed to be confined to sets that are constant, 
+i.e.~independent of the system state and control inputs. Disturbances that depend on model states (or control inputs) 
+are considered in~\cite{Kuntsevich:1995,Rakovic:2006}. However general formulations of state and input dependence can 
+result in non-convex constraints~\citep{Rakovic:2006}. To avoid this we make use of recent algorithmic 
+advances~\citep{Schaich:2015} that enable a class of polytopic disturbance sets that depend affinely on the system 
+state and control input to be handled using convex constraints. This provides an algorithmic and analytical framework 
+which is used in the
 current paper to embed affine state and input dependent disturbance constraints into the framework of the
 active set RMPC solver framework proposed by~\cite{Buerger:2011}. Disturbances that belong to sets which depend
 on model states and inputs can account for multiplicative model uncertainty as well as linearisation
-errors, and the approach of this paper is therefore able to handle linearisation errors in RMPC non-conservatively.}
+errors, and the approach of this paper is therefore able to handle linearisation errors in RMPC non-conservatively.
 
 % \edit{In all aforementioned work and, to the authors' best knowledge, in all of the published literature on algorithmic
 % solutions to the RMPC problem, the disturbances are confined to sets that are assumed to be constant,
@@ -183,7 +191,7 @@ W(x,u)$ is assumed to have a known dependence on the values of $x$ and $u$, acco
 	\mathcal W(x,u) = \{w: Gw \leq H(x,u)\},
 \end{equation}
 %
-\edit{where each element of $H(x,u)$ is a convex, piecewise affine function for all $(x,u)\in\mathcal X\times\mathcal U$}. 
+where each element of $H(x,u)$ is a convex, piecewise affine function for all $(x,u)\in\mathcal X\times\mathcal U$. 
 %\edit{where $H(x,u)$ is an elementwise convex, piecewise affine function}.
 The control objective is to minimize the
 worst case value, over all future model uncertainty, of the cost
@@ -254,7 +262,7 @@ to be formulated in a convenient way. The following result shows that the MRPI s
 associated with the pointwise polytopic set~\eqref{eq:PWA:def:disturbance} is polytopic if $H$ is elementwise convex 
 and piecewise affine. For a proof and detailed discussion of this result we refer the reader to~\cite{Schaich:2015}.
 %
-\edit{\begin{thm}[\cite{Schaich:2015}]\label{thm:MRPI:set:is:polytopic}
+\begin{thm}[\cite{Schaich:2015}]\label{thm:MRPI:set:is:polytopic}
 Let $\mathcal X \subseteq \{x:\Gamma x\leq{\bf{1}}\wedge-\Gamma x\leq{\bf{1}}\}$ be a polyhedral set, let the pair $(A+BK,\Gamma)$ be
 observable, and let $\mathcal W(x,Kx)$ be defined as in~\eqref{eq:PWA:def:disturbance} with an elementwise convex piecewise
 affine function $H(x,Kx)$ which is bounded for all finite $x$. Then the MRPI set $\mathcal X^\infty$ is polytopic, i.e.\ it has the representation 
@@ -273,7 +281,7 @@ vertex, $w_k(x,u)$, is a piecewise affine function of $(x,u)$, i.e.
         W_{k,2}^x x + W_{k,2}^u u + w_{k,2},\dots\}
 \end{multline}
 where the maximisation is performed elementwise.
-\end{rem}}
+\end{rem}
 %
 We now derive the representation of $\mathcal Z_m$ and $\mathcal X_m$ as defined in~\eqref{eq:definition:stage:constraints}.
 According to Theorem~\ref{thm:MRPI:set:is:polytopic} the MRPI set $\mathcal X^\infty$ is polytopic and has the 
@@ -400,12 +408,12 @@ Therefore we restrict $\theta$ to satisfy
 \end{equation} 
 so that the dual mpQP has a unique solution
 and the choice of $\beta$ does not affect either the primal or the dual cost and can be used for
-any purpose. \edit{For a general mpQP, the condition~\eqref{mpQP:compatability:assumption} ensures that~\eqref{mpQP:primal}
+any purpose. For a general mpQP, the condition~\eqref{mpQP:compatability:assumption} ensures that~\eqref{mpQP:primal}
 % is a restriction on the set
 % of parameters $\theta$ for which~\eqref{mpQP:primal} 
 has a solution of the form~\eqref{mpQP:solution}.
 In our multi-stage min-max setup, the parameter $\theta$ is the optimiser of a subsequent optimisation
-problem; hence~\eqref{mpQP:compatability:assumption} can be enforced by imposing it as a constraint (which we call a compatibility constraint) on $\theta$ in that problem.}
+problem; hence~\eqref{mpQP:compatability:assumption} can be enforced by imposing it as a constraint (which we call a compatibility constraint) on $\theta$ in that problem.
 %the so called compatibility constraint. 
 The optimal objective of~\eqref{mpQP:primal} is given by
 \begin{equation}\label{mpQP:cost:to:go}\begin{split}
@@ -641,16 +649,16 @@ We recursively define all primal and dual variables:
 Notice that $\Phi^{(\cdot)}_m$ is only non-trivial if the associated sub-problem is degenerate. The
 representation~\eqref{eq:trajectory:affine:representation} is valid as long as the constraint set remains
 unchanged, i.e.\ the inequalities that hold with equality do not change.
-\textcolor{red}{With~\eqref{eq:trajectory:affine:representation} we can justify \edit{choosing the degeneracy parameters as
+With~\eqref{eq:trajectory:affine:representation} we can justify choosing the degeneracy parameters as
 $\beta_m=\zeta_{m+1}$ and $\hat\beta_m=\hat\zeta_m$. When a constraint is activated the associated dual variable starts at zero and depends affinely on $(x_N,\beta_N)$.
 %changesin an affine way in the appropriate direction, 
 When the active constraints of a sub-problem become linearly dependent three things happen: the dual variables to the degenerate constraints
 depend on an additional degeneracy parameter, a compatibility constraint is introduced in the predecessor
 problem, and that compatibility constraint's dual variable is given as a affine function starting at zero,
-while all other sub-problems are not affected by the degeneracy. Through} the proposed choice we couple
+while all other sub-problems are not affected by the degeneracy. Through the proposed choice we couple
 the degeneracy variable to dual variable of the associated compatibility constraint, hence adding an 
 additional affine function to the already affine representation of the dual variable and thereby ensuring continuity
-of the dual variable.}
+of the dual variable.
 
 Given the known set of active
 constraints at $\chi_0$ we perform a line search towards $\chi_e$ via  
