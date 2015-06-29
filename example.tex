@@ -28,12 +28,11 @@ system with an implementation in MATLAB  in section~\ref{sec:example}.
 
 
 \section{Example}\label{sec:example}
-In this section we present a numerical simulation for a simplified levitating ball model, as derived in~\cite{Schaich:2015}. The dynamics of the nonlinear system are given $m\ddot y = m g - c\frac{i^2}{y^2}$,
-where $m$ denotes the mass of the ball, $g$ denotes the gravitation constant, $c$ denotes a constant depending
-on the coil, $y$ the vertical distance to the coil, the simplification is due to neglecting inductive dynamics 
-and assuming we that can influence the current~$i$ directly. Figure~\ref{fig:levitating:ball} illustrates the setup.
+In this section we present a numerical simulation for a simplified levitating ball model, as derived in~\cite{Schaich:2015}. \edit{The dynamics of the nonlinear system are given $m\ddot y = m g - c i^2/y^2$,
+where $m$ denotes the mass of the ball, $g$ is the acceleration due to gravity, $c$ is a constant depending
+on the coil, $y$ the vertical distance to the coil (Fig.~\ref{fig:levitating:ball}). We assume that the current~$i$ is directly specified by the controller, thus neglecting the inductive dynamics of the coil. %Figure~\ref{fig:levitating:ball} illustrates the setup.
 Choosing the state $x=(y,\dot y)$ and the input $u=i$ we obtain a state space representation which depends nonlinearly
-on both the state and the input. For any $x_1>0$, the system is in equilibrium if $x_2=0$ and $u=\sqrt{\frac{gm}{c}}x_1$.
+on the state and control input.} For any $x_1>0$, the system is in equilibrium if $x_2=0$ and $u=\sqrt{\frac{gm}{c}}x_1$.
 
 Linearising the nonlinear differential 
 equation $\dot x = f(x,u)$ around an equilibrium point $(\hat x, \hat
@@ -82,11 +81,11 @@ U=\{u:\abs{ u-\hat u}\leq 10 \,\text{mA}\}$.
 To obtain $\mathcal W(x,u)$ we sample $\mathcal X$ and $\mathcal U$ with a total of 25 samples, i.e. the cardinality
 of $\mathcal S_w$ is 10. In the simulation we use horizon length $N=5$. We perform a cold started line search from $\chi_0=(0,0)$
 to the outer bound of the constraint set at $\chi_e=(1,-30)$, the resulting trajectories at the boundaries of
-individual active sets are plotted in figure~\ref{fig:plot}.
+individual active sets are plotted in Figure~\ref{fig:plot}.
 
-The simulation was implemented in MATLAB only using non-optimised built-in functions for the main computational
-purposes. In the simulation illustrated in figure~\ref{fig:plot} there were a total of 10 iterations required,
-out of which 7 correspond to changes of the dominating right hand side of $\mathcal W(x,u)$, for which no
+The simulation was implemented in MATLAB using only non-optimised built-in functions for the main computational
+purposes. In the simulation illustrated in Fig.~\ref{fig:plot} a total of $10$ iterations were required,
+of which $7$ correspond to changes of the dominating right hand side of $\mathcal W(x,u)$, for which no
 recomputation of the solution is necessary. For $\chi_e$ on the boundary of the feasible set
 the solution time is less than $0.5\, \text{s}$ in total (using a MacBook Pro with a $2.3\,\text{GHz}$ quad-core processor).
 
